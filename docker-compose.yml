@@ -11,6 +11,7 @@ services:
       - PortainerData:/data
 
   edc_portainer_nginx:
+    container_name: edc_portainer_nginx
     image: nginx:alpine
     restart: always
     volumes:
