@@ -6,14 +6,22 @@ services:
     container_name: edc_portainer
     image: portainer/portainer-ce
     restart: always
-    ports:
-        - ${PORTAINER_PORT:-9000}:9000
     volumes:
-        - /var/run/docker.sock:/var/run/docker.sock 
-        - PortainerData:/data
+      - /var/run/docker.sock:/var/run/docker.sock 
+      - PortainerData:/data
+
+  edc_portainer_nginx:
+    image: nginx:alpine
+    restart: always
+    volumes:
+      - ./docker/nginx/sites:/etc/nginx/conf.d
+    environment:
+      VIRTUAL_HOST: ${SERVICE_PORTAINER_DNS}
+      LETSENCRYPT_HOST: ${SERVICE_PORTAINER_DNS}
+      LETSENCRYPT_EMAIL: ${SSL_LETSENCRYPT_EMAIL}
 
 volumes:
-    PortainerData:
+  PortainerData:
 
 networks:
   default:
