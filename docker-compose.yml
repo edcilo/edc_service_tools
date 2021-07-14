@@ -56,8 +56,28 @@ services:
       LETSENCRYPT_HOST: ${SERVICE_PROMETHEUS_DNS}
       LETSENCRYPT_EMAIL: ${SSL_LETSENCRYPT_EMAIL}
 
+  edc_grafana:
+    image: grafana/grafana
+    container_name: edc_grafana
+    restart: always
+    user: root
+    volumes:
+      - GrafanaStorage:/va/lib/grafana
+  
+  edc_grafana_nginx:
+    container_name: edc_grafana_nginx
+    image: nginx:alpine
+    restart: always
+    volumes:
+      - ./docker/nginx/grafana/sites:/etc/nginx/conf.d
+    environment:
+      VIRTUAL_HOST: ${SERVICE_GRAFANA_DNS}
+      LETSENCRYPT_HOST: ${SERVICE_GRAFANA_DNS}
+      LETSENCRYPT_EMAIL: ${SSL_LETSENCRYPT_EMAIL}
+
 volumes:
   PortainerData:
+  GrafanaStorage:
 
 networks:
   default:
