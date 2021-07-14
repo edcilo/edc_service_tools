@@ -15,10 +15,45 @@ services:
     image: nginx:alpine
     restart: always
     volumes:
-      - ./docker/nginx/sites:/etc/nginx/conf.d
+      - ./docker/nginx/portainer/sites:/etc/nginx/conf.d
     environment:
       VIRTUAL_HOST: ${SERVICE_PORTAINER_DNS}
       LETSENCRYPT_HOST: ${SERVICE_PORTAINER_DNS}
+      LETSENCRYPT_EMAIL: ${SSL_LETSENCRYPT_EMAIL}
+
+  edc_node_exporter:
+    container_name: edc_node_exporter
+    image: prom/node-exporter:latest
+    restart: always
+      
+  edc_cadvisor:
+    container_name: edc_cadvisor
+    image: google/cadvisor:latest
+    restart: always
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      
+  edc_prometheus:
+    container_name: edc_prometheus
+    image: prom/prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+  
+  edc_prometheus_nginx:
+    container_name: edc_prometheus_nginx
+    image: nginx:alpine
+    restart: always
+    volumes:
+      - ./docker/nginx/prometheus/sites:/etc/nginx/conf.d
+    environment:
+      VIRTUAL_HOST: ${SERVICE_PROMETHEUS_DNS}
+      LETSENCRYPT_HOST: ${SERVICE_PROMETHEUS_DNS}
       LETSENCRYPT_EMAIL: ${SSL_LETSENCRYPT_EMAIL}
 
 volumes:
